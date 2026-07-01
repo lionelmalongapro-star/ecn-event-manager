@@ -15,7 +15,7 @@ export const users: User[] = [
   { id: "u2", name: "Erica Oghoghorie", email: "", role: "team", organization: "ECN" },
   { id: "u3", name: "Jovita Nsoh", email: "jovita@aec.com", role: "partner_ecn", organization: "AEC" },
   { id: "u4", name: "Symon Rubens", email: "", role: "partner_ecn", organization: "Local" },
-  { id: "u5", name: "Marcillac Malonga", email: "", role: "partner_ecn", organization: "ECN" },
+  { id: "u5", name: "Marcillac Malonga", email: "marcillac@ecn.com", role: "partner_ecn", organization: "ECN" },
 ];
 
 export const event: EventData = {
