@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useReducer, useEffect, useRef, type ReactNode, type Dispatch } from "react";
+import { useAuth } from "./auth";
 import {
   missions as initialMissions,
   pipelineTargets as initialTargets,
@@ -234,7 +235,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const initialState: State = {
+const ecnState: State = {
   missions: initialMissions,
   pipelineTargets: initialTargets,
   contacts: initialContacts,
@@ -242,44 +243,76 @@ const initialState: State = {
   notifications: initialNotifications,
 };
 
-const STORAGE_KEY = "cemac_app_state";
+const emptyState: State = {
+  missions: [],
+  pipelineTargets: [],
+  contacts: [],
+  activityLog: [],
+  notifications: [],
+};
+
+function getDefaultState(clientId: string | null): State {
+  return clientId === "ecn" || clientId === null ? ecnState : emptyState;
+}
+
+function storageKey(clientId: string | null): string {
+  return `cemac_app_state_${clientId ?? "ecn"}`;
+}
 
 const StoreCtx = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const { activeClientId } = useAuth();
+  const [state, dispatch] = useReducer(reducer, getDefaultState(activeClientId));
   const hydrated = useRef(false);
+  const prevClientId = useRef<string | null>(activeClientId);
 
-  // Hydrate from localStorage once on mount (client-only, avoids SSR mismatch)
+  // Hydrate / re-hydrate when active client changes
   useEffect(() => {
+    if (prevClientId.current === activeClientId && hydrated.current) return;
+    prevClientId.current = activeClientId;
+    const key = storageKey(activeClientId);
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(key);
       if (stored) {
         dispatch({ type: "HYDRATE", state: JSON.parse(stored) });
+      } else if (activeClientId === "ecn" || activeClientId === null) {
+        // Migrate legacy key
+        const legacy = localStorage.getItem("cemac_app_state");
+        if (legacy) {
+          dispatch({ type: "HYDRATE", state: JSON.parse(legacy) });
+          localStorage.setItem(key, legacy);
+        } else {
+          dispatch({ type: "HYDRATE", state: getDefaultState(activeClientId) });
+        }
+      } else {
+        dispatch({ type: "HYDRATE", state: getDefaultState(activeClientId) });
       }
-    } catch {}
+    } catch {
+      dispatch({ type: "HYDRATE", state: getDefaultState(activeClientId) });
+    }
     hydrated.current = true;
-  }, []);
+  }, [activeClientId]);
 
-  // Persist on every change, and sync across tabs/windows of the same browser
+  // Persist on every state change
   useEffect(() => {
     if (!hydrated.current) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(storageKey(activeClientId), JSON.stringify(state));
     } catch {}
-  }, [state]);
+  }, [state, activeClientId]);
 
+  // Sync across tabs
   useEffect(() => {
+    const key = storageKey(activeClientId);
     function onStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY && e.newValue) {
-        try {
-          dispatch({ type: "HYDRATE", state: JSON.parse(e.newValue) });
-        } catch {}
+      if (e.key === key && e.newValue) {
+        try { dispatch({ type: "HYDRATE", state: JSON.parse(e.newValue) }); } catch {}
       }
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  }, [activeClientId]);
 
   return <StoreCtx.Provider value={{ state, dispatch }}>{children}</StoreCtx.Provider>;
 }

@@ -11,12 +11,12 @@ import { LayoutDashboard, Target, Flag, Handshake, Users, Settings } from "lucid
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { key: "dashboard" as const, href: "/", icon: LayoutDashboard },
-  { key: "missions" as const, href: "/missions", icon: Target },
-  { key: "milestones" as const, href: "/milestones", icon: Flag },
-  { key: "pipeline" as const, href: "/pipeline", icon: Handshake },
-  { key: "contacts" as const, href: "/contacts", icon: Users, adminOnly: true },
-  { key: "settings" as const, href: "/settings", icon: Settings },
+  { key: "dashboard" as const, href: "/dashboard", icon: LayoutDashboard },
+  { key: "missions" as const, href: "/dashboard/missions", icon: Target },
+  { key: "milestones" as const, href: "/dashboard/milestones", icon: Flag },
+  { key: "pipeline" as const, href: "/dashboard/pipeline", icon: Handshake },
+  { key: "contacts" as const, href: "/dashboard/contacts", icon: Users, adminOnly: true },
+  { key: "settings" as const, href: "/dashboard/settings", icon: Settings },
 ];
 
 function MobileBottomNav() {
@@ -29,7 +29,9 @@ function MobileBottomNav() {
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 flex border-t border-border bg-sidebar">
       {visible.map((item) => {
-        const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const isActive = item.href === "/dashboard"
+          ? pathname === "/dashboard"
+          : pathname.startsWith(item.href);
         const Icon = item.icon;
         return (
           <Link
@@ -55,14 +57,20 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, activeClientId } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isLoading) return;
+    if (!user) {
       router.replace("/login");
+      return;
     }
-  }, [user, isLoading, router]);
+    // Admin without an active client goes to the selector
+    if (user.role === "admin" && !activeClientId) {
+      router.replace("/select");
+    }
+  }, [user, isLoading, activeClientId, router]);
 
   if (isLoading) {
     return (
@@ -73,10 +81,11 @@ export default function DashboardLayout({
   }
 
   if (!user) return null;
+  if (user.role === "admin" && !activeClientId) return null;
 
   return (
     <div className="flex h-full">
-      <Sidebar />
+      <Sidebar navItems={navItems} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto pb-16 md:pb-0">{children}</main>

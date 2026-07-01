@@ -1,5 +1,15 @@
 export type UserRole = "admin" | "team" | "partner_ecn";
 
+export type Client = {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  initials: string;
+  industry?: string;
+  createdAt: string;
+};
+
 export type User = {
   id: string;
   name: string;

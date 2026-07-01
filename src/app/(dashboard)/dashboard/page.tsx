@@ -95,7 +95,7 @@ export default function DashboardPage() {
                   <AlertTriangle className="h-4 w-4" />
                   {t.dashboard.overdueItems}
                 </h2>
-                <Link href="/missions" className="text-xs font-medium text-primary hover:underline">
+                <Link href="/dashboard/missions" className="text-xs font-medium text-primary hover:underline">
                   {locale === "fr" ? "Voir tout" : "View all"} <ArrowRight className="inline h-3 w-3" />
                 </Link>
               </div>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           <div className="rounded-lg border border-border bg-card">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <h2 className="text-sm font-semibold text-foreground">{locale === "fr" ? "Missions en cours" : "Active Missions"}</h2>
-              <Link href="/missions" className="text-xs font-medium text-primary hover:underline">
+              <Link href="/dashboard/missions" className="text-xs font-medium text-primary hover:underline">
                 {locale === "fr" ? "Voir tout" : "View all"} <ArrowRight className="inline h-3 w-3" />
               </Link>
             </div>
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 <Calendar className="h-3.5 w-3.5" />
                 <span>{formatDate(nextMilestone.targetDate, locale)}</span>
               </div>
-              <Link href="/milestones" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+              <Link href="/dashboard/milestones" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
                 {locale === "fr" ? "Tous les jalons" : "All milestones"} <ArrowRight className="h-3 w-3" />
               </Link>
             </div>

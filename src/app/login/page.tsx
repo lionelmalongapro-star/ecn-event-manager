@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LogIn, Globe } from "lucide-react";
 
 export default function LoginPage() {
-  const { login, user, isLoading } = useAuth();
+  const { login, user, isLoading, activeClientId } = useAuth();
   const { locale, setLocale } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -19,9 +19,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace("/");
+      if (user.role === "admin" && !activeClientId) {
+        router.replace("/select");
+      } else {
+        router.replace("/dashboard");
+      }
     }
-  }, [isLoading, user, router]);
+  }, [isLoading, user, activeClientId, router]);
 
   if (!isLoading && user) {
     return null;
@@ -36,9 +40,8 @@ export default function LoginPage() {
     if (err) {
       setError(isFr ? "Email ou mot de passe incorrect" : "Incorrect email or password");
       setSubmitting(false);
-    } else {
-      router.replace("/");
     }
+    // redirect handled by the useEffect above once user state updates
   };
 
   if (isLoading) {

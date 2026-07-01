@@ -1,9 +1,24 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
-import type { User, UserRole } from "./types";
+import type { User, UserRole, Client } from "./types";
 
 type Account = { email: string; password: string; user: User };
+
+const SEED_CLIENTS: Client[] = [
+  {
+    id: "ecn",
+    name: "ECN",
+    description: "Energy Capital Network — CEMAC Data Center, Energy & AI Infrastructure Summit 2026",
+    color: "oklch(0.70 0.19 45)",
+    initials: "ECN",
+    industry: "Energy & Infrastructure",
+    createdAt: "2026-01-01T00:00:00Z",
+  },
+];
+
+const CLIENTS_KEY = "cemac_clients";
+const ACTIVE_CLIENT_KEY = "cemac_active_client";
 
 const SEED_ACCOUNTS: Account[] = [
   {
@@ -56,6 +71,10 @@ type AuthContext = {
   logout: () => void;
   inviteMember: (input: { name: string; email: string; role: UserRole; organization: string }) => InviteResult | string;
   onlineUserIds: Set<string>;
+  clients: Client[];
+  activeClientId: string | null;
+  setActiveClient: (id: string) => void;
+  createClient: (input: Omit<Client, "id" | "createdAt">) => Client;
 };
 
 const AuthCtx = createContext<AuthContext | null>(null);
@@ -82,6 +101,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accounts, setAccounts] = useState<Account[]>(SEED_ACCOUNTS);
   const [isLoading, setIsLoading] = useState(true);
   const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
+  const [clients, setClients] = useState<Client[]>(SEED_CLIENTS);
+  const [activeClientId, setActiveClientId] = useState<string | null>(null);
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load accounts + session on mount
@@ -114,6 +135,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (account) setUser(account.user);
       }
     } catch {}
+
+    // Load clients
+    try {
+      const storedClients = localStorage.getItem(CLIENTS_KEY);
+      if (storedClients) {
+        const parsed = JSON.parse(storedClients) as Client[];
+        const hasEcn = parsed.some((c) => c.id === "ecn");
+        setClients(hasEcn ? parsed : [SEED_CLIENTS[0], ...parsed]);
+      }
+    } catch {}
+
+    // Load active client
+    try {
+      const storedActive = localStorage.getItem(ACTIVE_CLIENT_KEY);
+      if (storedActive) setActiveClientId(storedActive);
+    } catch {}
+
     setIsLoading(false);
   }, []);
 
@@ -168,6 +206,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(SESSION_KEY);
   }, []);
 
+  const setActiveClient = useCallback((id: string) => {
+    setActiveClientId(id);
+    try { localStorage.setItem(ACTIVE_CLIENT_KEY, id); } catch {}
+  }, []);
+
+  const createClient = useCallback((input: Omit<Client, "id" | "createdAt">): Client => {
+    const newClient: Client = {
+      ...input,
+      id: `client_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...clients, newClient];
+    setClients(updated);
+    try { localStorage.setItem(CLIENTS_KEY, JSON.stringify(updated)); } catch {}
+    return newClient;
+  }, [clients]);
+
   const inviteMember = useCallback(
     ({ name, email, role, organization }: { name: string; email: string; role: UserRole; organization: string }): InviteResult | string => {
       if (accounts.some((a) => a.email.toLowerCase() === email.toLowerCase())) {
@@ -202,6 +257,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         inviteMember,
         onlineUserIds,
+        clients,
+        activeClientId,
+        setActiveClient,
+        createClient,
       }}
     >
       {children}
