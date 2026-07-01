@@ -16,10 +16,17 @@ const SEED_ACCOUNTS: Account[] = [
     password: "Erica2026!",
     user: { id: "u2", name: "Erica Oghoghorie", email: "erica@ecn.com", role: "team", organization: "ECN" },
   },
+  {
+    email: "jovita@ecn.com",
+    password: "Jovita2026!",
+    user: { id: "u3", name: "Jovita Nsoh", email: "jovita@ecn.com", role: "partner_ecn", organization: "ECN" },
+  },
 ];
 
 const SESSION_KEY = "cemac_session";
 const ACCOUNTS_KEY = "cemac_accounts";
+const ACCOUNTS_VERSION_KEY = "cemac_accounts_v";
+const ACCOUNTS_VERSION = "2"; // bump when SEED_ACCOUNTS changes
 const PRESENCE_KEY = "cemac_presence";
 const ONLINE_WINDOW_MS = 25_000;
 const HEARTBEAT_MS = 8_000;
@@ -76,9 +83,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let loadedAccounts = SEED_ACCOUNTS;
     try {
+      const storedVersion = localStorage.getItem(ACCOUNTS_VERSION_KEY);
       const storedAccounts = localStorage.getItem(ACCOUNTS_KEY);
-      if (storedAccounts) loadedAccounts = JSON.parse(storedAccounts);
-      else localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(SEED_ACCOUNTS));
+      if (storedAccounts && storedVersion === ACCOUNTS_VERSION) {
+        loadedAccounts = JSON.parse(storedAccounts);
+      } else {
+        // Re-seed: merge any extra invited accounts with the new seed list
+        const extra: Account[] = storedAccounts
+          ? (JSON.parse(storedAccounts) as Account[]).filter(
+              (a) => !SEED_ACCOUNTS.some((s) => s.email.toLowerCase() === a.email.toLowerCase())
+            )
+          : [];
+        loadedAccounts = [...SEED_ACCOUNTS, ...extra];
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(loadedAccounts));
+        localStorage.setItem(ACCOUNTS_VERSION_KEY, ACCOUNTS_VERSION);
+      }
     } catch {}
     setAccounts(loadedAccounts);
 
