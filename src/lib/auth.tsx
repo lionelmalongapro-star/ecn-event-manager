@@ -8,7 +8,7 @@ type Account = { email: string; password: string; user: User };
 const SEED_ACCOUNTS: Account[] = [
   {
     email: "lionel.malonga.pro@gmail.com",
-    password: "Admin2026!",
+    password: "Ab3K5K6ZVu!",
     user: { id: "u1", name: "Lionel Malonga", email: "lionel.malonga.pro@gmail.com", role: "admin", organization: "Local" },
   },
   {
@@ -31,7 +31,7 @@ const SEED_ACCOUNTS: Account[] = [
 const SESSION_KEY = "cemac_session";
 const ACCOUNTS_KEY = "cemac_accounts";
 const ACCOUNTS_VERSION_KEY = "cemac_accounts_v";
-const ACCOUNTS_VERSION = "5"; // bump when SEED_ACCOUNTS changes
+const ACCOUNTS_VERSION = "6"; // bump when SEED_ACCOUNTS changes
 const PRESENCE_KEY = "cemac_presence";
 const ONLINE_WINDOW_MS = 25_000;
 const HEARTBEAT_MS = 8_000;
