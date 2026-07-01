@@ -17,16 +17,16 @@ const SEED_ACCOUNTS: Account[] = [
     user: { id: "u2", name: "Erica Oghoghorie", email: "erica@ecn.com", role: "team", organization: "ECN" },
   },
   {
-    email: "jovita@ecn.com",
+    email: "jovita@aec.com",
     password: "Jovita2026!",
-    user: { id: "u3", name: "Jovita Nsoh", email: "jovita@ecn.com", role: "partner_ecn", organization: "ECN" },
+    user: { id: "u3", name: "Jovita Nsoh", email: "jovita@aec.com", role: "partner_ecn", organization: "AEC" },
   },
 ];
 
 const SESSION_KEY = "cemac_session";
 const ACCOUNTS_KEY = "cemac_accounts";
 const ACCOUNTS_VERSION_KEY = "cemac_accounts_v";
-const ACCOUNTS_VERSION = "3"; // bump when SEED_ACCOUNTS changes
+const ACCOUNTS_VERSION = "4"; // bump when SEED_ACCOUNTS changes
 const PRESENCE_KEY = "cemac_presence";
 const ONLINE_WINDOW_MS = 25_000;
 const HEARTBEAT_MS = 8_000;
