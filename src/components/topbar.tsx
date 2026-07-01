@@ -2,7 +2,7 @@
 
 import { useI18n } from "@/i18n/context";
 import { useAuth } from "@/lib/auth";
-import { useTheme } from "@/lib/theme";
+import { useThemeToggle } from "@/lib/theme";
 import { Globe, LogOut, Sun, Moon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -17,7 +17,7 @@ import { NotificationBell } from "@/components/notifications";
 export function Topbar() {
   const { t, locale, setLocale } = useI18n();
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { isDark, toggle } = useThemeToggle();
 
   const initials = user
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
@@ -25,7 +25,7 @@ export function Topbar() {
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-3 sm:px-6">
-      {/* Left: event name on mobile, search placeholder on desktop */}
+      {/* Left: event name on mobile, search on desktop */}
       <p className="text-sm font-semibold text-foreground truncate max-w-[160px] sm:hidden">
         CEMAC Summit
       </p>
@@ -41,11 +41,11 @@ export function Topbar() {
       <div className="flex items-center gap-1 sm:gap-2">
         {/* Theme toggle */}
         <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          onClick={toggle}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-95"
         >
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
         {/* Language picker */}

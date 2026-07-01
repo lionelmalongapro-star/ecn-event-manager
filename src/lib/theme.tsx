@@ -1,37 +1,28 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
-type Theme = "dark" | "light";
-type ThemeContext = { theme: Theme; toggleTheme: () => void };
+const KEY = "cemac_theme";
 
-const ThemeCtx = createContext<ThemeContext | null>(null);
+export function useThemeToggle() {
+  const [isDark, setIsDark] = useState(true);
 
-const STORAGE_KEY = "cemac_theme";
-
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-
+  // Sync from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored === "light") apply("light");
+    const stored = localStorage.getItem(KEY);
+    const dark = stored !== "light";
+    setIsDark(dark);
+    document.documentElement.classList.toggle("light", !dark);
   }, []);
 
-  function apply(t: Theme) {
-    setTheme(t);
-    document.documentElement.classList.toggle("light", t === "light");
-    localStorage.setItem(STORAGE_KEY, t);
-  }
+  const toggle = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      document.documentElement.classList.toggle("light", !next);
+      localStorage.setItem(KEY, next ? "dark" : "light");
+      return next;
+    });
+  };
 
-  return (
-    <ThemeCtx.Provider value={{ theme, toggleTheme: () => apply(theme === "dark" ? "light" : "dark") }}>
-      {children}
-    </ThemeCtx.Provider>
-  );
-}
-
-export function useTheme() {
-  const ctx = useContext(ThemeCtx);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
-  return ctx;
+  return { isDark, toggle };
 }

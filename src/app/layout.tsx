@@ -4,7 +4,6 @@ import "./globals.css";
 import { I18nProvider } from "@/i18n/context";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth";
-import { ThemeProvider } from "@/lib/theme";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -22,15 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} h-full antialiased`}>
       <body className="h-full font-sans">
-        <ThemeProvider>
-          <AuthProvider>
-            <I18nProvider>
-              <StoreProvider>{children}</StoreProvider>
-            </I18nProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <I18nProvider>
+            <StoreProvider>{children}</StoreProvider>
+          </I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );
