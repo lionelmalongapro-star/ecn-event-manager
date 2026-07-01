@@ -461,7 +461,7 @@ export default function MissionsPage() {
   const categories = ["all", ...new Set(allMissions.map((m) => m.category))];
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-4 p-3 sm:p-5 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-foreground">{t.missions.title}</h1>
@@ -532,8 +532,8 @@ export default function MissionsPage() {
           })}
         </div>
       ) : (
-        <div className="rounded-lg border border-border bg-card">
-          <div className="grid grid-cols-[1fr_100px_100px_120px_80px] gap-2 border-b border-border px-4 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="rounded-lg border border-border bg-card overflow-x-auto">
+          <div className="grid grid-cols-[1fr_100px_100px_120px_80px] gap-2 border-b border-border px-4 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground min-w-[560px]">
             <span>Mission</span>
             <span>{t.common.status}</span>
             <span>{t.common.priority}</span>
@@ -545,7 +545,7 @@ export default function MissionsPage() {
               const progress = getMissionProgress(m);
               const isOverdue = new Date(m.deadline) < new Date() && m.status !== "completed";
               return (
-                <div key={m.id} className="grid grid-cols-[1fr_100px_100px_120px_80px] items-center gap-2 px-4 py-3 text-sm">
+                <div key={m.id} className="grid grid-cols-[1fr_100px_100px_120px_80px] items-center gap-2 px-4 py-3 text-sm min-w-[560px]">
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">{missionTitle(m, locale)}</p>
                     <p className="mt-0.5 truncate text-xs text-muted-foreground">

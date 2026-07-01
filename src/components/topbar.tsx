@@ -2,7 +2,8 @@
 
 import { useI18n } from "@/i18n/context";
 import { useAuth } from "@/lib/auth";
-import { Search, Globe, LogOut } from "lucide-react";
+import { useTheme } from "@/lib/theme";
+import { Globe, LogOut, Sun, Moon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,15 +17,20 @@ import { NotificationBell } from "@/components/notifications";
 export function Topbar() {
   const { t, locale, setLocale } = useI18n();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const initials = user
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
     : "?";
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-6">
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-3 sm:px-6">
+      {/* Left: event name on mobile, search placeholder on desktop */}
+      <p className="text-sm font-semibold text-foreground truncate max-w-[160px] sm:hidden">
+        CEMAC Summit
+      </p>
+      <div className="relative hidden sm:block w-full max-w-sm">
+        <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input
           type="text"
           placeholder={t.common.search}
@@ -32,9 +38,19 @@ export function Topbar() {
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+
+        {/* Language picker */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+          <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             <Globe className="h-4 w-4" />
             <span className="text-xs font-medium uppercase">{locale}</span>
           </DropdownMenuTrigger>
@@ -56,8 +72,9 @@ export function Topbar() {
 
         <NotificationBell />
 
+        {/* Avatar / user menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="ml-1 flex items-center gap-2.5 rounded-md px-2 py-1 transition-colors duration-150 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+          <DropdownMenuTrigger className="ml-0.5 flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors duration-150 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                 {initials}

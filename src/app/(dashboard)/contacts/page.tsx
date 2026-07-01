@@ -136,7 +136,7 @@ export default function ContactsPage() {
   };
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-4 p-3 sm:p-5 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-foreground">{t.contacts.title}</h1>
@@ -180,8 +180,8 @@ export default function ContactsPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <Table>
+      <div className="rounded-lg border border-border bg-card overflow-x-auto">
+        <Table className="min-w-[560px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="text-xs font-medium uppercase tracking-wide">{t.common.name}</TableHead>

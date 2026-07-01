@@ -4,6 +4,7 @@ import "./globals.css";
 import { I18nProvider } from "@/i18n/context";
 import { StoreProvider } from "@/lib/store";
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "@/lib/theme";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -23,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="h-full font-sans">
-        <AuthProvider>
-          <I18nProvider>
-            <StoreProvider>{children}</StoreProvider>
-          </I18nProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <I18nProvider>
+              <StoreProvider>{children}</StoreProvider>
+            </I18nProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

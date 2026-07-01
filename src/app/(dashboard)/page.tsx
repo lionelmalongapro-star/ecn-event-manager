@@ -42,7 +42,7 @@ export default function DashboardPage() {
     .sort((a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime())[0];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-3 sm:p-5 lg:p-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{t.dashboard.title}</h1>
         <p className="text-sm text-muted-foreground">{event.name} — {event.dates}</p>

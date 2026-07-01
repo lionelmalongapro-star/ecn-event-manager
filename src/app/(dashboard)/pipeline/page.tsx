@@ -705,7 +705,7 @@ export default function PipelinePage() {
   };
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="space-y-4 p-3 sm:p-5 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-foreground">{t.pipeline.title}</h1>
